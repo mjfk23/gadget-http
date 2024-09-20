@@ -28,8 +28,6 @@
     "psr/http-factory": "^1.1"
   },
   "require-dev": {
-    "guzzlehttp/guzzle": "^7.9",
-    "guzzlehttp/psr7": "^2.7",
     "phpstan/phpstan": "^1.12",
     "phpstan/phpstan-strict-rules": "^1.6",
     "phpstan/extension-installer": "^1.4",
