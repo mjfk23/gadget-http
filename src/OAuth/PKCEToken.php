@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Gadget\Http\OAuth;
 
-final class PKCEToken
+class PKCEToken
 {
     /**
      * @param string $mode

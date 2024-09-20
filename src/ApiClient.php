@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Gadget\Http;
 
-use Gadget\Http\Exception\HttpInvalidStatusCodeException;
+use Gadget\Http\Exception\HttpException;
 use Gadget\Io\Cast;
 use Gadget\Io\JSON;
 use Gadget\Util\Stack;
@@ -18,7 +18,7 @@ use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class ApiClient implements
+class ApiClient implements
     RequestHandlerInterface,
     RequestFactoryInterface,
     ServerRequestFactoryInterface,
@@ -236,6 +236,6 @@ final class ApiClient implements
     ): array {
         return ($skipStatusCodeCheck || $response->getStatusCode() === 200)
             ? Cast::toArray(JSON::decode($response->getBody()->getContents()))
-            : throw new HttpInvalidStatusCodeException($response->getStatusCode());
+            : throw new HttpException(["Invalid response code: %s", $response->getStatusCode()]);
     }
 }

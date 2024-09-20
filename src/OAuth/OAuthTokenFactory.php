@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Gadget\Http\OAuth;
 
-use Gadget\Http\Exception\OAuthInvalidStateException;
+use Gadget\Http\Exception\OAuthException;
 use Gadget\Factory\AbstractFactory;
 use Gadget\Io\Cast;
 use Gadget\Http\ApiClient;
@@ -78,7 +78,7 @@ class OAuthTokenFactory extends AbstractFactory
     ): OAuthToken {
         $item = $this->cache->getItem(hash('SHA256', sprintf('%s::%s', self::class, $state)));
         if (!$item->isHit()) {
-            throw new OAuthInvalidStateException();
+            throw new OAuthException(["Invalid state: %s", $state]);
         }
         $this->cache->deleteItem($item->getKey());
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Gadget\Http\OAuth;
 
-final class OAuthConfig
+class OAuthConfig
 {
     /**
      * @param string $jwksUri

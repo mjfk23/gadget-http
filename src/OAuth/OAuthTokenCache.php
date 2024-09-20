@@ -7,7 +7,7 @@ namespace Gadget\Http\OAuth;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
-final class OAuthTokenCache
+class OAuthTokenCache
 {
     /**
      * @param CacheItemPoolInterface $cache

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Gadget\Http\OAuth;
 
-final class PKCETokenGenerator
+class PKCETokenGenerator
 {
-    private const PKCE_VERIFIER_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+    /** @var string */
+    protected const PKCE_VERIFIER_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
 
 
     /**

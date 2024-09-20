@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class OAuthMiddleware implements MiddlewareInterface
+class OAuthMiddleware implements MiddlewareInterface
 {
     /**
      * @param OAuthTokenCache $cache

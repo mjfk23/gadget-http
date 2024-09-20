@@ -9,7 +9,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
-final class JWKS extends CachedKeySet
+class JWKS extends CachedKeySet
 {
     public function __construct(
         OAuthConfig $config,

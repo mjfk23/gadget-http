@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Gadget\Http\OAuth;
 
 use Firebase\JWT\JWT;
-use Gadget\Http\Exception\OAuthInvalidIDTokenException;
-use Gadget\Http\Exception\OAuthInvalidNonceException;
+use Gadget\Http\Exception\OAuthException;
 use Gadget\Io\Cast;
 use Psr\Cache\CacheItemPoolInterface;
 
-final class OIDCTokenFactory
+class OIDCTokenFactory
 {
     /**
      * @param OAuthTokenFactory $factory
@@ -61,7 +60,7 @@ final class OIDCTokenFactory
         $nonce = Cast::toString($jwt['nonce'] ?? '');
         $item = $this->cache->getItem(hash('SHA256', sprintf('%s::%s', self::class, $nonce)));
         if (!$item->isHit() || $item->get() !== $state) {
-            throw new OAuthInvalidNonceException();
+            throw new OAuthException(["Invalid nonce: %s", $nonce]);
         }
         $this->cache->deleteItem($item->getKey());
 
@@ -77,7 +76,7 @@ final class OIDCTokenFactory
     {
         JWT::$leeway = 30;
         return Cast::toArray(JWT::decode(
-            $token->idToken ?? throw new OAuthInvalidIDTokenException(),
+            $token->idToken ?? throw new OAuthException("Invalid id_token"),
             $this->jwks
         ));
     }
