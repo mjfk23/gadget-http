@@ -28,11 +28,9 @@ class OAuthMiddleware implements MiddlewareInterface
      */
     public function getToken(mixed $key): OAuthToken|null
     {
-        return $this->cache->get(
-            is_string($key)
-                ? $key
-                : $this->config->defaultKey
-        );
+        return is_string($key)
+            ? $this->cache->get($key)
+            : null;
     }
 
 
