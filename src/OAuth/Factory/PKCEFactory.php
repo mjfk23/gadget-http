@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Gadget\Http\OAuth;
+namespace Gadget\Http\OAuth\Factory;
 
-class PKCETokenGenerator
+use Gadget\Http\OAuth\Model\PKCE;
+
+class PKCEFactory
 {
     /** @var string */
     protected const PKCE_VERIFIER_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
@@ -22,9 +24,9 @@ class PKCETokenGenerator
 
 
     /**
-     * @return PKCEToken
+     * @return PKCE
      */
-    public function create(): PKCEToken
+    public function create(): PKCE
     {
         $verifier = join(
             array_map(
@@ -37,7 +39,7 @@ class PKCETokenGenerator
             )
         );
 
-        return new PKCEToken(
+        return new PKCE(
             $this->challengeMode,
             $verifier,
             base64_encode(hash($this->hashAlgo, $verifier, true)),
