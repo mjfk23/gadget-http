@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Gadget\Http\OAuth;
+namespace Gadget\Http\OAuth\Model;
 
-class OAuthToken implements \JsonSerializable
+class Token implements \JsonSerializable
 {
     /**
      * @param string $tokenType

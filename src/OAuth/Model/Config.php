@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Gadget\Http\OAuth;
+namespace Gadget\Http\OAuth\Model;
 
-class OAuthConfig
+class Config
 {
     /**
+     * @param string $hostName
      * @param string $jwksUri
      * @param string $authCodeUri
      * @param string $tokenUri
@@ -14,10 +15,11 @@ class OAuthConfig
      * @param string $clientSecret
      * @param string $redirectUri
      * @param string $scope
-     * @param string $keyAttrName
-     * @param string $defaultKey
+     * @param string $oauthRequestAttr
+     * @param string $oauthCacheKey
      */
     public function __construct(
+        public string $hostName,
         public string $authCodeUri,
         public string $tokenUri,
         public string $clientId,
@@ -26,8 +28,8 @@ class OAuthConfig
         public string $scope,
         public string $jwksUri = '',
         public string $jwksDefaultAlg = 'RS256',
-        public string $keyAttrName = 'oauthTokenKey',
-        public string $defaultKey = 'default'
+        public string $oauthRequestAttr = self::class . '::oauthRequestAttr',
+        public string $oauthCacheKey = self::class . '::oauthCacheKey'
     ) {
     }
 }
