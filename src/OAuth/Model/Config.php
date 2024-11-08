@@ -15,8 +15,8 @@ class Config
      * @param string $clientSecret
      * @param string $redirectUri
      * @param string $scope
-     * @param string $oauthRequestAttr
-     * @param string $oauthCacheKey
+     * @param string $tokenRequestAttr
+     * @param string $tokenCacheKey
      */
     public function __construct(
         public string $hostName,
@@ -28,8 +28,8 @@ class Config
         public string $scope,
         public string $jwksUri = '',
         public string $jwksDefaultAlg = 'RS256',
-        public string $oauthRequestAttr = self::class . '::oauthRequestAttr',
-        public string $oauthCacheKey = self::class . '::oauthCacheKey'
+        public string $tokenRequestAttr = self::class . '::oauthRequestAttr',
+        public string $tokenCacheKey = self::class . '::oauthCacheKey'
     ) {
     }
 }

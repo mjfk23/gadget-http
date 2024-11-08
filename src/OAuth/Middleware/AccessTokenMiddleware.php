@@ -29,18 +29,18 @@ class AccessTokenMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
-        $requestKey = $request->getAttribute($this->config->oauthRequestAttr);
+        $requestKey = $request->getAttribute($this->config->tokenRequestAttr);
 
-        $oauthCacheKey = match (true) {
+        $tokenCacheKey = match (true) {
             is_string($requestKey) => $requestKey,
-            $requestKey === true => $this->config->oauthCacheKey,
+            $requestKey === true => $this->config->tokenCacheKey,
             $requestKey === false => null,
-            $request->getUri()->getHost() === $this->config->hostName => $this->config->oauthCacheKey,
+            $request->getUri()->getHost() === $this->config->hostName => $this->config->tokenCacheKey,
             default => null
         };
 
-        $accessToken = $oauthCacheKey !== null
-            ? $this->cache->get($oauthCacheKey)?->accessToken
+        $accessToken = $tokenCacheKey !== null
+            ? $this->cache->get($tokenCacheKey)?->accessToken
             : null;
 
         return $handler->handle(
