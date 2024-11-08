@@ -5,55 +5,48 @@ declare(strict_types=1);
 namespace Gadget\Http\OAuth\Cache;
 
 use Gadget\Cache\CacheItemPool;
+use Gadget\Cache\TypedCachePool;
 use Gadget\Http\OAuth\Factory\TokenFactory;
 use Gadget\Http\OAuth\Model\Token;
 use Psr\Cache\CacheItemInterface;
 
-class TokenCache
+/** @extends TypedCachePool<Token> */
+class TokenCache extends TypedCachePool
 {
     /**
-     * @param TokenFactory $factory
      * @param CacheItemPool $cache
+     * @param TokenFactory $factory
      */
     public function __construct(
-        private TokenFactory $factory,
-        private CacheItemPool $cache
+        CacheItemPool $cache,
+        private TokenFactory $factory
     ) {
-        $this->cache = $cache->withNamespace(self::class);
+        parent::__construct($cache);
     }
 
 
     /**
-     * @param string $key
+     * @param mixed $v
      * @return Token|null
      */
-    public function get(string $key): Token|null
+    protected function toValue(mixed $v): mixed
     {
-        $item = $this->cache->get($key);
-        $token = $item->isHit() ? $item->get() : null;
-        $token = $token instanceof Token ? $token : null;
-
-        return match (true) {
-            ((($token?->expiresOn ?? 0) - 30) - time()) > 0 => $token,
-            is_string($token?->refreshToken) => $this->set(
-                $key,
-                $this->factory->createFromRefreshToken($token->refreshToken)
-            ),
-            default => null
-        };
+        return ($v instanceof Token && ($v->expiresOn - 30 - time()) > 0)
+            ? $v
+            : null;
     }
 
 
     /**
-     * @param string $key
-     * @param Token $token
-     * @return Token
+     * @param CacheItemInterface $item
+     * @return Token|null
      */
-    public function set(
-        string $key,
-        Token $token
-    ): Token {
-        $this->cache->save($this->cache->get($key)->set($token));
-        return $token;
+    protected function create(CacheItemInterface $item): mixed
+    {
+        $token = $item->isHit() ? $item->get() : null;
+        $refreshToken = $token instanceof Token ? $token->refreshToken : null;
+        return is_string($refreshToken)
+            ? $this->factory->createFromRefreshToken($refreshToken)
+            : null;
     }
 }
