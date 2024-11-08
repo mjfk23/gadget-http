@@ -32,26 +32,28 @@ class TokenCache
         $item = $this->cache->get($key);
         $token = $item->isHit() ? $item->get() : null;
         $token = $token instanceof Token ? $token : null;
-        return ((($token?->expiresOn ?? 0) - time()) > 30)
-            ? $token
-            : $this->refresh($item, $token);
+
+        return match (true) {
+            ((($token?->expiresOn ?? 0) - 30) - time()) > 0 => $token,
+            is_string($token?->refreshToken) => $this->set(
+                $key,
+                $this->factory->createFromRefreshToken($token->refreshToken)
+            ),
+            default => null
+        };
     }
 
 
     /**
-     * @param CacheItemInterface $item
-     * @param Token|null $token
-     * @return Token|null
+     * @param string $key
+     * @param Token $token
+     * @return Token
      */
-    private function refresh(
-        CacheItemInterface $item,
-        Token|null $token
-    ): Token|null {
-        if ($token !== null && $token->refreshToken !== null) {
-            $this->cache->save($item->set($this->factory->createFromRefreshToken($token->refreshToken)));
-        } else {
-            $this->cache->delete($item);
-        }
+    public function set(
+        string $key,
+        Token $token
+    ): Token {
+        $this->cache->save($this->cache->get($key)->set($token));
         return $token;
     }
 }
