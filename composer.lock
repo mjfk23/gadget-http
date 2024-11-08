@@ -396,16 +396,16 @@
         },
         {
             "name": "mjfk23/gadget-core",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjfk23/gadget-core.git",
-                "reference": "80942acf8068eaeb21366b69fb21162b91f7bc9d"
+                "reference": "90ab126e552e4c1f8fddb736a642e1cdfb3c58ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/80942acf8068eaeb21366b69fb21162b91f7bc9d",
-                "reference": "80942acf8068eaeb21366b69fb21162b91f7bc9d",
+                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/90ab126e552e4c1f8fddb736a642e1cdfb3c58ed",
+                "reference": "90ab126e552e4c1f8fddb736a642e1cdfb3c58ed",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/mjfk23/gadget-core",
                 "wiki": "https://github.com/mjfk23/gadget-core/wiki"
             },
-            "time": "2024-11-07T19:34:08+00:00"
+            "time": "2024-11-08T15:36:34+00:00"
         },
         {
             "name": "php-http/discovery",
