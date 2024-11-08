@@ -6,13 +6,12 @@ namespace Gadget\Http\OAuth\Middleware;
 
 use Gadget\Http\OAuth\Cache\TokenCache;
 use Gadget\Http\OAuth\Model\Config;
-use Gadget\Http\OAuth\Model\Token;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class AddTokenToRequestMiddleware implements MiddlewareInterface
+class AccessTokenMiddleware implements MiddlewareInterface
 {
     /**
      * @param Config $config
@@ -30,11 +29,23 @@ class AddTokenToRequestMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
-        $key = $request->getAttribute($this->config->oauthRequestAttr);
-        $token = is_string($key) ? $this->cache->get($key) : null;
+        $requestKey = $request->getAttribute($this->config->oauthRequestAttr);
+
+        $oauthCacheKey = match (true) {
+            is_string($requestKey) => $requestKey,
+            $requestKey === true => $this->config->oauthCacheKey,
+            $requestKey === false => null,
+            $request->getUri()->getHost() === $this->config->hostName => $this->config->oauthCacheKey,
+            default => null
+        };
+
+        $accessToken = $oauthCacheKey !== null
+            ? $this->cache->get($oauthCacheKey)?->accessToken
+            : null;
+
         return $handler->handle(
-            ($token instanceof Token && is_string($token->accessToken))
-                ? $request->withHeader('Authorization', "Bearer {$token->accessToken}")
+            is_string($accessToken)
+                ? $request->withHeader('Authorization', "Bearer {$accessToken}")
                 : $request
         );
     }
