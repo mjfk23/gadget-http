@@ -174,4 +174,14 @@ class HttpClient implements
         $this->middlewareStack ??= new MiddlewareStack();
         return $this->middlewareStack;
     }
+
+
+    /**
+     * @param MiddlewareInterface $middleware
+     * @return void
+     */
+    public function addMiddleware(...$middleware): void
+    {
+        $this->getMiddlewareStack()->push(...$middleware);
+    }
 }
