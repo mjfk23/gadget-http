@@ -50,6 +50,6 @@ class AuthCodeFactory
             $nonce,
             $pkce,
             $code
-        )) ?? throw new \RuntimeException();
+        )) ?? throw new \RuntimeException("Unable to create authorization code");
     }
 }

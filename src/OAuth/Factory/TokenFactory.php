@@ -39,7 +39,7 @@ final class TokenFactory
         return $this->create(
             [
                 'grant_type' => 'authorization_code',
-                'code' => $authCode->code ?? throw new \RuntimeException(),
+                'code' => $authCode->code ?? throw new \RuntimeException("Missing authorization code"),
                 'code_verifier' => $authCode->pkce?->verifier,
                 'redirect_uri' => $this->config->redirectUri,
                 'client_id' => $this->config->clientId,
