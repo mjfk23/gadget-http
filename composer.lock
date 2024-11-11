@@ -396,16 +396,16 @@
         },
         {
             "name": "mjfk23/gadget-core",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjfk23/gadget-core.git",
-                "reference": "90ab126e552e4c1f8fddb736a642e1cdfb3c58ed"
+                "reference": "63ad9adcb6d7b60034a9dc810df7facd59107bbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/90ab126e552e4c1f8fddb736a642e1cdfb3c58ed",
-                "reference": "90ab126e552e4c1f8fddb736a642e1cdfb3c58ed",
+                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/63ad9adcb6d7b60034a9dc810df7facd59107bbc",
+                "reference": "63ad9adcb6d7b60034a9dc810df7facd59107bbc",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/mjfk23/gadget-core",
                 "wiki": "https://github.com/mjfk23/gadget-core/wiki"
             },
-            "time": "2024-11-08T15:36:34+00:00"
+            "time": "2024-11-11T16:24:20+00:00"
         },
         {
             "name": "php-http/discovery",
@@ -1012,16 +1012,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.12.8",
+            "version": "1.12.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "f6a60a4d66142b8156c9da923f1972657bc4748c"
+                "reference": "fc463b5d0fe906dcf19689be692c65c50406a071"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f6a60a4d66142b8156c9da923f1972657bc4748c",
-                "reference": "f6a60a4d66142b8156c9da923f1972657bc4748c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/fc463b5d0fe906dcf19689be692c65c50406a071",
+                "reference": "fc463b5d0fe906dcf19689be692c65c50406a071",
                 "shasum": ""
             },
             "require": {
@@ -1066,7 +1066,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-11-06T19:06:49+00:00"
+            "time": "2024-11-11T15:37:09+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
