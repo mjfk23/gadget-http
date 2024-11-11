@@ -81,14 +81,14 @@ final class TokenFactory
         callable $createIdToken
     ): Token {
         return $this->apiClient->sendApiRequest(
-            'POST',
-            $this->config->tokenUri,
-            ['Content-Type' => 'application/x-www-form-urlencoded'],
-            $params,
-            fn (ResponseInterface $response): Token => $this->createToken(
+            method: 'POST',
+            uri: $this->config->tokenUri,
+            parseResponse: fn (ResponseInterface $response): Token => $this->createToken(
                 ApiClient::jsonResponse($response),
                 $createIdToken
-            )
+            ),
+            headers: ['Content-Type' => 'application/x-www-form-urlencoded'],
+            body: $params,
         );
     }
 
