@@ -47,22 +47,24 @@ class ApiClient extends HttpClient
      * @template T
      * @param string $method
      * @param UriInterface|string $uri
+     * @param (callable(ResponseInterface $response): T) $parseResponse
+     * @param (callable(ServerRequestInterface $request): ServerRequestInterface)|null $formatRequest
      * @param array<string,string|string[]> $headers
      * @param mixed $body
-     * @param (callable(ResponseInterface $response): T) $parseResponse
      * @param bool $skipStatusCodeCheck
      * @return T
      */
     public function sendApiRequest(
         string $method,
         UriInterface|string $uri,
+        callable $parseResponse,
+        callable|null $formatRequest = null,
         array $headers = [],
         mixed $body = null,
-        callable $parseResponse = self::jsonResponse(...),
         bool $skipStatusCodeCheck = false
     ): mixed {
         try {
-            $request = $this->createApiRequest($method, $uri, $headers, $body);
+            $request = $this->createApiRequest($method, $uri, $headers, $body, $formatRequest);
             $response = $this->sendRequest($request);
             return $this->parseApiResponse(
                 $response,
@@ -88,13 +90,15 @@ class ApiClient extends HttpClient
      * @param UriInterface|string $uri
      * @param array<string,string|string[]> $headers
      * @param mixed $body
+     * @param (callable(ServerRequestInterface $request): ServerRequestInterface)|null $formatRequest
      * @return ServerRequestInterface
      */
     public function createApiRequest(
         string $method,
         UriInterface|string $uri,
         array $headers = [],
-        mixed $body = null
+        mixed $body = null,
+        callable|null $formatRequest = null
     ): ServerRequestInterface {
         $request = $this->createServerRequest($method, $uri);
 
@@ -111,7 +115,9 @@ class ApiClient extends HttpClient
             }));
         }
 
-        return $request;
+        return is_callable($formatRequest)
+            ? $formatRequest($request)
+            : $request;
     }
 
 
@@ -124,7 +130,7 @@ class ApiClient extends HttpClient
      */
     public function parseApiResponse(
         ResponseInterface $response,
-        callable $parseResponse = self::jsonResponse(...),
+        callable $parseResponse,
         bool $skipStatusCodeCheck = false
     ): mixed {
         return ($skipStatusCodeCheck || $response->getStatusCode() === 200)
