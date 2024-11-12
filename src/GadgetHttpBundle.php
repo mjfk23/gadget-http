@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Gadget;
+namespace Gadget\Http;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
