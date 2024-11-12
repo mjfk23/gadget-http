@@ -66,7 +66,7 @@ final class TokenFactory
                 'client_id' => $this->config->clientId,
                 'client_secret' => $this->config->clientSecret
             ],
-            fn(): null => null
+            fn(): IdToken|null => null
         );
     }
 
