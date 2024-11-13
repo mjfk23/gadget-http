@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Gadget\Http;
+namespace Gadget\Http\Client;
 
+use Gadget\Http\Exception\HttpClientException;
 use Gadget\Http\Exception\HttpException;
 use Gadget\Http\Middleware\MiddlewareStack;
 use Gadget\Util\Stack;
@@ -71,15 +72,7 @@ class HttpClient implements
             $this->callStack->push(new MiddlewareStack($this->getMiddlewareStack()->getElements()));
             return $this->handle($this->getServerRequest($request));
         } catch (\Throwable $t) {
-            throw new HttpException(
-                [
-                    "Error with request: %s %s",
-                    $request->getMethod(),
-                    $request->getUri()->__toString()
-                ],
-                0,
-                $t
-            );
+            throw new HttpClientException($request, $t);
         } finally {
             $this->callStack->pop();
         }
@@ -96,8 +89,12 @@ class HttpClient implements
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->callStack->peek()?->pop()?->process($request, $this)
-            ?? $this->client->sendRequest($request);
+        try {
+            return $this->callStack->peek()?->pop()?->process($request, $this)
+                ?? $this->client->sendRequest($request);
+        } catch (\Throwable $t) {
+            throw new HttpClientException($request, $t);
+        }
     }
 
 

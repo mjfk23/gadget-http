@@ -6,7 +6,7 @@ namespace Gadget\Http\OAuth\Cache;
 
 use Firebase\JWT\CachedKeySet as BaseCachedKeySet;
 use Gadget\Cache\CacheItemPool;
-use Gadget\Http\HttpClient;
+use Gadget\Http\Client\HttpClient;
 use Gadget\Http\OAuth\Model\Config;
 
 class CachedKeySet extends BaseCachedKeySet
