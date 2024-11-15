@@ -6,6 +6,6 @@ namespace Gadget\Http\Exception;
 
 use Gadget\Lang\Exception;
 
-final class OAuthException extends Exception
+class RequestException extends Exception
 {
 }
