@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4a0ec8095fe65eb47b8bf1b7269ce71",
+    "content-hash": "f2db37ef913a58c768d67b8c5e36182c",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -396,26 +396,22 @@
         },
         {
             "name": "mjfk23/gadget-core",
-            "version": "v1.0.4",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjfk23/gadget-core.git",
-                "reference": "8893b99352d1b440fcabaec7e359a86365c32c72"
+                "reference": "7b51b50ada6017627a1f46eaaae38b06381684e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/8893b99352d1b440fcabaec7e359a86365c32c72",
-                "reference": "8893b99352d1b440fcabaec7e359a86365c32c72",
+                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/7b51b50ada6017627a1f46eaaae38b06381684e5",
+                "reference": "7b51b50ada6017627a1f46eaaae38b06381684e5",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "php": ">=8.1",
-                "psr/cache": "^3.0",
-                "symfony/config": "6.4.*",
-                "symfony/dependency-injection": "6.4.*",
-                "symfony/http-kernel": "6.4.*",
-                "symfony/yaml": "6.4.*"
+                "psr/cache": "^3.0"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.4",
@@ -450,7 +446,7 @@
                 "source": "https://github.com/mjfk23/gadget-core",
                 "wiki": "https://github.com/mjfk23/gadget-core/wiki"
             },
-            "time": "2024-11-12T00:49:55+00:00"
+            "time": "2024-11-18T12:52:15+00:00"
         },
         {
             "name": "php-http/discovery",
@@ -2362,16 +2358,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.12.10",
+            "version": "1.12.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "fc463b5d0fe906dcf19689be692c65c50406a071"
+                "reference": "0d1fc20a962a91be578bcfe7cf939e6e1a2ff733"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/fc463b5d0fe906dcf19689be692c65c50406a071",
-                "reference": "fc463b5d0fe906dcf19689be692c65c50406a071",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0d1fc20a962a91be578bcfe7cf939e6e1a2ff733",
+                "reference": "0d1fc20a962a91be578bcfe7cf939e6e1a2ff733",
                 "shasum": ""
             },
             "require": {
@@ -2416,7 +2412,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-11-11T15:37:09+00:00"
+            "time": "2024-11-17T14:08:01+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
@@ -2469,16 +2465,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.11.0",
+            "version": "3.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "70c08f8d20c0eb4fe56f26644dd94dae76a7f450"
+                "reference": "19473c30efe4f7b3cd42522d0b2e6e7f243c6f87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/70c08f8d20c0eb4fe56f26644dd94dae76a7f450",
-                "reference": "70c08f8d20c0eb4fe56f26644dd94dae76a7f450",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/19473c30efe4f7b3cd42522d0b2e6e7f243c6f87",
+                "reference": "19473c30efe4f7b3cd42522d0b2e6e7f243c6f87",
                 "shasum": ""
             },
             "require": {
@@ -2545,7 +2541,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-11-12T09:53:29+00:00"
+            "time": "2024-11-16T12:02:36+00:00"
         }
     ],
     "aliases": [],
