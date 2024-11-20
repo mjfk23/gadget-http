@@ -72,10 +72,7 @@ abstract class MessageHandler
     /**
      * @return ServerRequestInterface
      */
-    protected function createRequest(): ServerRequestInterface
-    {
-        return $this->getRequestBuilder()->getRequest();
-    }
+    abstract protected function createRequest(): ServerRequestInterface;
 
 
     /**
