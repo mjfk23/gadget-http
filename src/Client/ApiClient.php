@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Client;
 
+use Gadget\Http\Message\MessageFactory;
+use Gadget\Http\Message\MessageHandler;
+
 abstract class ApiClient
 {
     /**
@@ -17,7 +20,7 @@ abstract class ApiClient
     /**
      * @return Client
      */
-    public function getClient(): Client
+    protected function getClient(): Client
     {
         return $this->client;
     }
@@ -27,9 +30,20 @@ abstract class ApiClient
      * @param Client $client
      * @return static
      */
-    public function setClient(Client $client): static
+    protected function setClient(Client $client): static
     {
         $this->client = $client;
         return $this;
+    }
+
+
+    /**
+     * @template TResponse
+     * @param MessageHandler<TResponse> $handler
+     * @return TResponse
+     */
+    protected function invoke(MessageHandler $handler): mixed
+    {
+        return $this->getClient()->invoke($handler);
     }
 }
