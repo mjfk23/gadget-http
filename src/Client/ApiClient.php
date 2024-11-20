@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Client;
 
-use Gadget\Http\Message\MessageFactory;
 use Gadget\Http\Message\MessageHandler;
 
 abstract class ApiClient

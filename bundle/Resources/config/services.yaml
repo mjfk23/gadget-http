@@ -1,6 +1,3 @@
-parameters:
-  gadget.http.cookie_file: "%kernel.project_dir%/var/cookies.json"
-
 services:
   _defaults:
     autowire: true
@@ -12,7 +9,3 @@ services:
       - "../../../src/DependencyInjection/"
       - "../../../src/Entity/"
       - "../../../src/Kernel.php"
-
-  Gadget\Http\Client\CookieMiddleware:
-    arguments:
-      $cookieFile: "%gadget.http.cookie_file%"
