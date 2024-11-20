@@ -4,55 +4,114 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Message;
 
+use Gadget\Http\Cookie\CookieJar;
 use Gadget\Io\JSON;
+use Gadget\Lang\Exception;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
 class RequestBuilder
 {
-    /** @var RequestMethod $method */
-    private RequestMethod $method = RequestMethod::GET;
+    /**
+     * @param mixed[] $queryParams
+     * @return string
+     */
+    public static function createQuery(array $queryParams): string
+    {
+        return http_build_query(
+            $queryParams,
+            '',
+            null,
+            PHP_QUERY_RFC3986
+        );
+    }
 
-    /** @var UriInterface|string $uri */
-    private UriInterface|string $uri = '';
 
-    /** @var array<string,int|float|string|bool> $queryParams */
+    private ServerRequestInterface $request;
+    /** @var array<string,int|float|string|bool|null> $queryParams */
     private array $queryParams = [];
 
-    /** @var array<string,string|string[]> $headers */
-    private array $headers = [];
 
-    /** @var array<string,string> $cookies */
-    private array $cookies = [];
-
-    /** @var array<string,mixed> $attributes */
-    private array $attributes = [];
-
-    /** @var array{mixed,ContentType}|null $body */
-    private array|null $body = null;
-
-
-    /** @return RequestMethod */
-    public function getMethod(): RequestMethod
-    {
-        return $this->method;
+    /**
+     * @param MessageFactory $messageFactory
+     */
+    public function __construct(
+        private MessageFactory $messageFactory,
+        private CookieJar $cookieJar,
+        string $method = 'GET',
+        string $uri = ''
+    ) {
+        $this->request = $this->getMessageFactory()->createServerRequest($method, $uri);
     }
 
 
     /**
-     * @param RequestMethod $method
+     * @return MessageFactory
+     */
+    protected function getMessageFactory(): MessageFactory
+    {
+        return $this->messageFactory;
+    }
+
+
+    /**
+     * @param MessageFactory $messageFactory
      * @return static
      */
-    public function setMethod(RequestMethod $method): static
+    protected function setMessageFactory(MessageFactory $messageFactory): static
     {
-        $this->method = $method;
+        $this->messageFactory = $messageFactory;
         return $this;
     }
 
 
-    /** @return UriInterface|string */
-    public function getUri(): UriInterface|string
+    /**
+     * @return ServerRequestInterface
+     */
+    public function getRequest(): ServerRequestInterface
     {
-        return $this->uri;
+        return $this->request;
+    }
+
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return static
+     */
+    protected function setRequest(ServerRequestInterface $request): static
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->getRequest()->getMethod();
+    }
+
+
+    /**
+     * @param string $method
+     * @return static
+     */
+    public function setMethod(string $method): static
+    {
+        return $this->setRequest(
+            $this->getRequest()->withMethod($method)
+        );
+    }
+
+
+    /**
+     * @return UriInterface
+     */
+    public function getUri(): UriInterface
+    {
+        return $this->getRequest()->getUri();
     }
 
 
@@ -62,12 +121,73 @@ class RequestBuilder
      */
     public function setUri(UriInterface|string $uri): static
     {
-        $this->uri = $uri;
-        return $this;
+        $uri = is_string($uri) ? $this->getMessageFactory()->createUri($uri) : $uri;
+        return $this->setRequest(
+            $this->getRequest()->withUri($uri)
+        );
     }
 
 
-    /** @return array<string,int|float|string|bool> */
+    /**
+     * @return string
+     */
+    public function getScheme(): string
+    {
+        return $this->getUri()->getScheme();
+    }
+
+
+    /**
+     * @param string $scheme
+     * @return static
+     */
+    public function setScheme(string $scheme): static
+    {
+        return $this->setUri($this->getUri()->withScheme($scheme));
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->getUri()->getHost();
+    }
+
+
+    /**
+     * @param string $host
+     * @return static
+     */
+    public function setHost(string $host): static
+    {
+        return $this->setUri($this->getUri()->withHost($host));
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->getUri()->getPath();
+    }
+
+
+    /**
+     * @param string $path
+     * @return static
+     */
+    public function setPath(string $path): static
+    {
+        return $this->setUri($this->getUri()->withPath($path));
+    }
+
+
+    /**
+     * @return array<string,int|float|string|bool|null>
+     */
     public function getQueryParams(): array
     {
         return $this->queryParams;
@@ -80,288 +200,96 @@ class RequestBuilder
      */
     public function setQueryParams(array $queryParams): static
     {
-        $this->queryParams = array_filter($queryParams, is_scalar(...));
+        $this->queryParams = $queryParams;
+        $query = self::createQuery($this->getQueryParams());
+        $this->setUri($this->getUri()->withQuery($query));
         return $this;
     }
 
 
     /**
-     * @param string $name
-     * @return int|float|string|bool|null
-     */
-    public function getQueryParam(string $name): int|float|string|bool|null
-    {
-        return $this->queryParams[$name] ?? null;
-    }
-
-
-    /**
-     * @param string $name
-     * @param int|float|string|bool|null $value
-     * @return static
-     */
-    public function setQueryParam(
-        string $name,
-        int|float|string|bool|null $value
-    ): static {
-        if (is_scalar($value)) {
-            $this->queryParams[$name] = $value;
-        } else {
-            unset($this->queryParams[$name]);
-        }
-        return $this;
-    }
-
-
-    /** @return array<string,string|string[]> */
-    public function getHeaders(): array
-    {
-        return $this->headers;
-    }
-
-
-    /**
-     * @param array<string,string|string[]|null> $headers
-     * @return static
-     */
-    public function setHeaders(array $headers): static
-    {
-        $this->headers = array_filter($headers);
-        return $this;
-    }
-
-
-    /**
-     * @param string $name
-     * @return string|string[]|null
-     */
-    public function getHeader(string $name): string|array|null
-    {
-        $value = $this->headers[$name] ?? null;
-        return is_array($value)
-            ? match (count($value)) {
-                0, 1 => array_shift($value),
-                default => $value
-            }
-            : $value;
-    }
-
-
-    /**
-     * @param string $name
      * @return string
      */
-    public function getSingleHeader(string $name): string|null
+    public function getBody(): string
     {
-        $value = $this->headers[$name] ?? null;
-        return is_array($value) ? array_shift($value) : $value;
+        $this->getRequest()->getBody()->rewind();
+        return $this->getRequest()->getBody()->getContents();
+    }
+
+
+    /**
+     * @param string $contentType
+     * @param mixed $body
+     * @return static
+     */
+    public function setBody(
+        string $contentType,
+        mixed $body
+    ): static {
+        if (!is_string($body)) {
+            $body = match ($contentType) {
+                'application/x-www-form-urlencoded' => is_array($body)
+                    ? self::createQuery($body)
+                    : throw new Exception(["Body is not an array: %s", $contentType]),
+                'application/json' => JSON::encode($body),
+                default => is_scalar($body) || (is_object($body) && $body instanceof \Stringable) || $body === null
+                    ? strval($body ?? '')
+                    : throw new Exception(["Unable to serialize body: %s", $contentType]),
+            };
+        }
+
+        if ($body === '') {
+            return $this;
+        }
+
+        $request = $this
+            ->getRequest()
+            ->withHeader('Content-Type', $contentType)
+            ->withHeader('Content-Length', (string) strlen($body));
+        $request->getBody()->write($body);
+        return $this->setRequest($request);
+    }
+
+
+    /**
+     * @param string $header
+     * @return string[]
+     */
+    public function getHeader(string $header): array
+    {
+        return $this->getRequest()->getHeader($header);
+    }
+
+
+    /**
+     * @param string $header
+     * @return string|null
+     */
+    public function getSingleHeader(string $header): string|null
+    {
+        $header = $this->getHeader($header);
+        return array_shift($header);
     }
 
 
     /**
      * @param string $name
-     * @param int|float|string|bool|string[]|null $value
+     * @param string|string[] $value
      * @return static
      */
     public function setHeader(
         string $name,
-        int|float|string|bool|array|null $value
+        string|array $value
     ): static {
-        if ($value !== null) {
-            $this->headers[$name] = is_array($value) || is_string($value)
-                ? $value
-                : strval($value);
-        } else {
-            unset($this->headers[$name]);
-        }
-        return $this;
-    }
-
-
-    /** @return array<string,string> */
-    public function getCookies(): array
-    {
-        return $this->cookies;
+        return $this->setRequest($this->getRequest()->withHeader($name, $value));
     }
 
 
     /**
-     * @param array<string,string|null> $cookies
-     * @return static
+     * @return CookieJar
      */
-    public function setCookies(array $cookies): static
+    public function getCookieJar(): CookieJar
     {
-        $this->cookies = array_filter($cookies);
-        return $this;
-    }
-
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    public function getCookie(string $name): string|null
-    {
-        return $this->cookies[$name] ?? null;
-    }
-
-
-    /**
-     * @param string $name
-     * @param string|null $value
-     * @return static
-     */
-    public function setCookie(
-        string $name,
-        string|null $value
-    ): static {
-        if (is_string($value)) {
-            $this->cookies[$name] = $value;
-        } else {
-            unset($this->cookies[$name]);
-        }
-        return $this;
-    }
-
-
-    /** @return array<string,mixed> */
-    public function getAttributes(): array
-    {
-        return $this->attributes;
-    }
-
-
-    /**
-     * @param array<string,mixed> $attributes
-     * @return static
-     */
-    public function setAttributes(array $attributes): static
-    {
-        $this->attributes = array_filter($attributes);
-        return $this;
-    }
-
-
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public function getAttribute(string $name): mixed
-    {
-        return $this->attributes[$name] ?? null;
-    }
-
-
-    /**
-     * @param string $name
-     * @param mixed $value
-     * @return static
-     */
-    public function setAttribute(
-        string $name,
-        mixed $value
-    ): static {
-        if ($value !== null) {
-            $this->attributes[$name] = $value;
-        } else {
-            unset($this->attributes);
-        }
-        return $this;
-    }
-
-
-    /** @return bool */
-    public function allowBody(): bool
-    {
-        return in_array($this->getMethod(), [RequestMethod::PUT, RequestMethod::POST], true);
-    }
-
-
-    /** @return ContentType|null */
-    public function getContentType(): ContentType|null
-    {
-        return ($this->body[1] ?? null);
-    }
-
-
-    /** @return mixed */
-    public function getBody(): mixed
-    {
-        return ($this->body[0] ?? null);
-    }
-
-
-    /**
-     * @param mixed $body
-     * @param ContentType|null $contentType
-     * @return static
-     */
-    public function setBody(
-        mixed $body,
-        ContentType|null $contentType
-    ): static {
-        $this->body = ($body !== null && $contentType !== null) ? [$body, $contentType] : null;
-        return $this;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function serializeUri(): string
-    {
-        return rtrim(sprintf(
-            '%s?%s',
-            $this->getUri(),
-            $this->serializeQuery()
-        ), '?');
-    }
-
-
-    /**
-     * @return string
-     */
-    public function serializeQuery(): string
-    {
-        return http_build_query(
-            $this->getQueryParams(),
-            '',
-            null,
-            PHP_QUERY_RFC3986
-        );
-    }
-
-
-    /**
-     * @return string|null
-     */
-    public function serializeBody(): string|null
-    {
-        $body = $this->getBody();
-        $contentType = $this->getContentType();
-
-        if ($body === null || $contentType === null) {
-            return null;
-        }
-
-        return match ($contentType) {
-            ContentType::FORM => match (true) {
-                is_object($body) || is_array($body) => http_build_query(
-                    $body,
-                    '',
-                    null,
-                    PHP_QUERY_RFC3986
-                ),
-                is_string($body) => $body,
-                default => null
-            },
-            ContentType::JSON => JSON::encode($body),
-            ContentType::TEXT => match (true) {
-                is_scalar($body) => strval($body),
-                is_object($body) && $body instanceof \Stringable => $body->__toString(),
-                default => null
-            },
-            default => null
-        };
+        return $this->cookieJar;
     }
 }

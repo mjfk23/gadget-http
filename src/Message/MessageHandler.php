@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Message;
 
+use Gadget\Http\Client\Client;
+use Gadget\Lang\Exception;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /** @template TResponse */
 abstract class MessageHandler
 {
+    /** @var Client|null $client */
+    private Client|null $client = null;
+
     /** @var RequestBuilder|null $requestBuilder */
     private RequestBuilder|null $requestBuilder = null;
 
@@ -21,56 +25,84 @@ abstract class MessageHandler
     private ResponseInterface|null $response = null;
 
 
-    /** @return ServerRequestInterface */
-    public function createRequest(ServerRequestFactoryInterface $requestFactory): ServerRequestInterface
+    /**
+     * @return Client
+     */
+    protected function getClient(): Client
     {
-        $requestBuilder = $this->getRequestBuilder();
+        return $this->client
+            ?? throw new Exception(["%s not set", Client::class]);
+    }
 
-        $request = $requestFactory->createServerRequest(
-            $requestBuilder->getMethod()->value,
-            $requestBuilder->getUri()
+
+    /**
+     * @param Client $client
+     * @return static
+     */
+    public function setClient(Client $client): static
+    {
+        $this->client = $client;
+        return $this;
+    }
+
+
+    /**
+     * @return RequestBuilder
+     */
+    protected function getRequestBuilder(): RequestBuilder
+    {
+        $this->requestBuilder ??= new RequestBuilder(
+            $this->getClient()->getMessageFactory(),
+            $this->getClient()->getCookieJar()
         );
+        return $this->requestBuilder;
+    }
 
-        $request = $request->withUri(
-            $request->getUri()
-                ->withQuery($this->serializeQuery())
-        );
 
-        if ($requestBuilder->allowBody()) {
-            $contentType = $requestBuilder->getContentType();
-            $body = $this->serializeBody();
+    /**
+     * @return ServerRequestInterface
+     */
+    public function getRequest(): ServerRequestInterface
+    {
+        $this->request ??= $this->createRequest();
+        return $this->request;
+    }
 
-            if ($contentType !== null && $body !== null) {
-                $requestBuilder
-                    ->setHeader('Content-Type', $contentType->value)
-                    ->setHeader('Content-Length', strlen($body));
-                $request->getBody()->write($body);
-            }
-        }
 
-        $headers = $requestBuilder->getHeaders();
-        foreach ($headers as $name => $value) {
-            $request = $request->withHeader($name, $value);
-        }
+    /**
+     * @return ServerRequestInterface
+     */
+    protected function createRequest(): ServerRequestInterface
+    {
+        return $this->getRequestBuilder()->getRequest();
+    }
 
-        if (!$request->hasHeader('Cookie')) {
-            $request = $request->withCookieParams($requestBuilder->getCookies());
-        }
 
-        $attributes = $requestBuilder->getAttributes();
-        foreach ($attributes as $name => $value) {
-            $request = $request->withAttribute($name, $value);
-        }
-
-        return $request;
+    /**
+     * @return ResponseInterface
+     */
+    protected function getResponse(): ResponseInterface
+    {
+        return $this->response
+            ?? throw new Exception(["%s not set", ResponseInterface::class]);
     }
 
 
     /**
      * @param ResponseInterface $response
+     * @return static
+     */
+    public function setResponse(ResponseInterface $response): static
+    {
+        $this->response = $response;
+        return $this;
+    }
+
+
+    /**
      * @return TResponse
      */
-    abstract public function handleResponse(ResponseInterface $response): mixed;
+    abstract public function handleResponse(): mixed;
 
 
     /**
@@ -80,74 +112,5 @@ abstract class MessageHandler
     public function handleError(\Throwable $t): mixed
     {
         throw $t;
-    }
-
-
-    /** @return RequestBuilder */
-    protected function getRequestBuilder(): RequestBuilder
-    {
-        $this->requestBuilder ??= $this->createRequestBuilder();
-        return $this->requestBuilder;
-    }
-
-
-    /**
-     * @return string
-     */
-    protected function serializeQuery(): string
-    {
-        return $this->getRequestBuilder()->serializeQuery();
-    }
-
-
-    /**
-     * @return string|null
-     */
-    protected function serializeBody(): string|null
-    {
-        return $this->getRequestBuilder()->serializeBody();
-    }
-
-
-    /** @return ServerRequestInterface|null */
-    protected function getRequest(): ServerRequestInterface|null
-    {
-        return $this->request;
-    }
-
-
-    /** @return RequestBuilder */
-    protected function createRequestBuilder(): RequestBuilder
-    {
-        return new RequestBuilder();
-    }
-
-
-    /**
-     * @param ServerRequestInterface $request
-     * @return ServerRequestInterface
-     */
-    public function setRequest(ServerRequestInterface $request): ServerRequestInterface
-    {
-        $this->request = $request;
-        return $this->request;
-    }
-
-
-    /** @return ResponseInterface|null */
-    protected function getResponse(): ResponseInterface|null
-    {
-        return $this->response;
-    }
-
-
-    /**
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
-    public function setResponse(ResponseInterface $response): ResponseInterface
-    {
-        $this->response = $response;
-        return $this->response;
     }
 }
