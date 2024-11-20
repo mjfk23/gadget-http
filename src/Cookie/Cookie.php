@@ -58,6 +58,26 @@ class Cookie
      */
     public static function fromString(string $cookie): self
     {
+        $pieces = self::getPieces($cookie);
+        return new self([
+            'Name' => $pieces['Name'][2] ?? '',
+            'Value' => $pieces['Value'][2] ?? null,
+            'Domain' => $pieces['Domain'][2] ?? null,
+            'Path' => $pieces['Path'][2] ?? null,
+            'Max-Age' => $pieces['Max-age'][2] ?? null,
+            'Expires' => $pieces['Expires'][2] ?? null,
+            'Secure' => isset($pieces['Secure']),
+            'HttpOnly' => isset($pieces['Httponly']),
+        ] + array_column($pieces, 2, 0));
+    }
+
+
+    /**
+     * @param string $cookie
+     * @return array<string,array{string,string,string|null}>
+     */
+    private static function getPieces(string $cookie): array
+    {
         // Explode the cookie string using a series of semicolons
         /** @var array{string,string,string|null}[] $pieces */
         $pieces = array_map(
@@ -74,13 +94,10 @@ class Cookie
 
         // The name of the cookie (first kvp) must exist and include an equal sign.
         list($name, ,$value) = array_shift($pieces) ?? [null, null, null];
-
-        /** @var array<string,int|string|bool|null> $values */
-        $values = array_column($pieces, 2, 1);
-        $values['Name'] = $name;
-        $values['Value'] = $value;
-
-        return new self($values);
+        return [
+            'Name' => ['Name', 'Name', $name],
+            'Value' => ['Value', 'Value', $value]
+        ] + array_column($pieces, null, 1);
     }
 
 
@@ -354,7 +371,7 @@ class Cookie
      */
     public function isExpired(): bool
     {
-        return ($this->getExpires() ?? PHP_INT_MAX) > time();
+        return ($this->getExpires() ?? PHP_INT_MAX) <= time();
     }
 
 
