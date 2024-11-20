@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Gadget\Http\Message;
 
 use Gadget\Http\Client\Client;
+use Gadget\Io\JSON;
 use Gadget\Lang\Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -109,5 +110,14 @@ abstract class MessageHandler
     public function handleError(\Throwable $t): mixed
     {
         throw $t;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    protected function decodeResponse(): mixed
+    {
+        return JSON::decode($this->getResponse()->getBody()->getContents());
     }
 }
