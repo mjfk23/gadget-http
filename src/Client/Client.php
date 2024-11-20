@@ -42,8 +42,7 @@ class Client implements ClientInterface
     public function __destruct()
     {
         if ($this->cookieJar !== null) {
-            $cacheItem = $this->cache->get('cookieJar');
-            $this->cache->save($cacheItem->set($this->cookieJar->clearExpired()));
+            $this->cache->set('cookieJar', $this->cookieJar->clearExpired());
         }
     }
 
@@ -157,11 +156,10 @@ class Client implements ClientInterface
     public function getCookieJar(): CookieJar
     {
         if ($this->cookieJar === null) {
-            $cacheItem = $this->cache->get('cookieJar');
-            $cookieJar = $cacheItem->isHit() ? $cacheItem->get() : null;
-            if (!$cookieJar instanceof CookieJar) {
+            $cookieJar = $this->cache->getObject('cookieJar', CookieJar::class);
+            if ($cookieJar === null) {
                 $cookieJar = new CookieJar();
-                $this->cache->save($cacheItem->set($cookieJar));
+                $this->cache->set('cookieJar', $cookieJar);
             }
             $this->cookieJar = $cookieJar;
         }

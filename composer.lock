@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2db37ef913a58c768d67b8c5e36182c",
+    "content-hash": "cc850d0134414ba56b63ef7699c834ba",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -395,23 +395,81 @@
             "time": "2024-07-18T11:15:46+00:00"
         },
         {
-            "name": "mjfk23/gadget-core",
-            "version": "v1.0.5",
+            "name": "mjfk23/gadget-cache",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mjfk23/gadget-core.git",
-                "reference": "7b51b50ada6017627a1f46eaaae38b06381684e5"
+                "url": "https://github.com/mjfk23/gadget-cache.git",
+                "reference": "44e043c09ff063e90c68fe8e5d0c11a616a3d10e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/7b51b50ada6017627a1f46eaaae38b06381684e5",
-                "reference": "7b51b50ada6017627a1f46eaaae38b06381684e5",
+                "url": "https://api.github.com/repos/mjfk23/gadget-cache/zipball/44e043c09ff063e90c68fe8e5d0c11a616a3d10e",
+                "reference": "44e043c09ff063e90c68fe8e5d0c11a616a3d10e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "mjfk23/gadget-core": "^1.0",
+                "php": ">=8.1",
+                "psr/cache": "^3.0"
+            },
+            "require-dev": {
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^1.12",
+                "phpstan/phpstan-strict-rules": "^1.6",
+                "squizlabs/php_codesniffer": "^3.10",
+                "symfony/config": "6.4.*",
+                "symfony/dependency-injection": "6.4.*",
+                "symfony/http-kernel": "6.4.*",
+                "symfony/yaml": "6.4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gadget\\Cache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Melody Kimball",
+                    "role": "lead"
+                }
+            ],
+            "description": "Gadget library for working with cache",
+            "homepage": "https://github.com/mjfk23/gadget-cache",
+            "support": {
+                "issues": "https://github.com/mjfk23/gadget-cache/issues",
+                "source": "https://github.com/mjfk23/gadget-cache",
+                "wiki": "https://github.com/mjfk23/gadget-cache/wiki"
+            },
+            "time": "2024-11-20T18:33:48+00:00"
+        },
+        {
+            "name": "mjfk23/gadget-core",
+            "version": "v1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mjfk23/gadget-core.git",
+                "reference": "0290023503cb18d3c6c23c923146bc6136ac2e73"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/0290023503cb18d3c6c23c923146bc6136ac2e73",
+                "reference": "0290023503cb18d3c6c23c923146bc6136ac2e73",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "php": ">=8.1",
-                "psr/cache": "^3.0"
+                "symfony/config": "6.4.*",
+                "symfony/dependency-injection": "6.4.*",
+                "symfony/http-kernel": "6.4.*",
+                "symfony/yaml": "6.4.*"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.4",
@@ -446,7 +504,7 @@
                 "source": "https://github.com/mjfk23/gadget-core",
                 "wiki": "https://github.com/mjfk23/gadget-core/wiki"
             },
-            "time": "2024-11-18T12:52:15+00:00"
+            "time": "2024-11-20T18:31:15+00:00"
         },
         {
             "name": "php-http/discovery",
