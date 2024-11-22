@@ -43,6 +43,6 @@ abstract class ApiClient
      */
     protected function invoke(MessageHandler $handler): mixed
     {
-        return $this->getClient()->invoke($handler);
+        return $handler->invoke($this->getClient());
     }
 }

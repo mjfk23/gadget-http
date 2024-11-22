@@ -12,6 +12,13 @@ use Psr\Http\Message\UriInterface;
 
 class RequestBuilder
 {
+    /** @var string */
+    public const FORM = 'application/x-www-form-urlencoded';
+
+    /** @var string */
+    public const JSON = 'application/json';
+
+
     /**
      * @param mixed[] $queryParams
      * @return string
@@ -27,13 +34,18 @@ class RequestBuilder
     }
 
 
+    /** @var ServerRequestInterface $request */
     private ServerRequestInterface $request;
+
     /** @var array<string,int|float|string|bool|null> $queryParams */
     private array $queryParams = [];
 
 
     /**
      * @param MessageFactory $messageFactory
+     * @param CookieJar $cookieJar
+     * @param string $method
+     * @param string $uri
      */
     public function __construct(
         private MessageFactory $messageFactory,
@@ -228,10 +240,10 @@ class RequestBuilder
     ): static {
         if (!is_string($body)) {
             $body = match ($contentType) {
-                'application/x-www-form-urlencoded' => is_array($body)
+                self::FORM => is_array($body)
                     ? self::createQuery($body)
                     : throw new Exception(["Body is not an array: %s", $contentType]),
-                'application/json' => JSON::encode($body),
+                self::JSON => JSON::encode($body),
                 default => is_scalar($body) || (is_object($body) && $body instanceof \Stringable) || $body === null
                     ? strval($body ?? '')
                     : throw new Exception(["Unable to serialize body: %s", $contentType]),

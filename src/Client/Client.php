@@ -7,15 +7,11 @@ namespace Gadget\Http\Client;
 use Gadget\Cache\CacheItemPool;
 use Gadget\Http\Cookie\Cookie;
 use Gadget\Http\Cookie\CookieJar;
-use Gadget\Http\Exception\ClientException;
-use Gadget\Http\Exception\RequestException;
-use Gadget\Http\Exception\ResponseException;
 use Gadget\Http\Message\MessageFactory;
-use Gadget\Http\Message\MessageHandler;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 class Client implements ClientInterface
@@ -48,56 +44,30 @@ class Client implements ClientInterface
 
 
     /**
-     * @template TResponse
-     * @param MessageHandler<TResponse> $handler
-     * @return TResponse
+     * @param RequestInterface $request
+     * @return ResponseInterface
      */
-    public function invoke(MessageHandler $handler): mixed
+    public function sendRequest(RequestInterface $request): ResponseInterface
     {
-        try {
-            $handler->setClient($this);
+        $request = $this->getMessageFactory()->toServerRequest($request);
 
-            try {
-                $request = $handler->getRequest();
-            } catch (\Throwable $t) {
-                throw new RequestException("Error building request", 0, $t);
-            }
+        $request = $this->addCookies($request);
 
-            try {
-                $response = $this->sendRequest($request);
-                $handler->setResponse($response);
-            } catch (\Throwable $t) {
-                throw new ClientException([
-                    "Error sending request: %s %s",
-                    $request->getMethod(),
-                    $request->getUri()
-                ], 0, $t);
-            }
+        $response = (new MiddlewareHandler($this->client, $this->middleware))
+            ->handle($request);
 
-            try {
-                return $handler->handleResponse();
-            } catch (\Throwable $t) {
-                throw new ResponseException([
-                    "Error handling response: %s %s => %s",
-                    $request->getMethod(),
-                    $request->getUri(),
-                    $response->getStatusCode()
-                ], 0, $t);
-            }
-        } catch (\Throwable $t) {
-            return $handler->handleError($t);
-        }
+        $this->saveCookies($request, $response);
+
+        return $response;
     }
 
 
     /**
-     * @param RequestInterface $request
-     * @return ResponseInterface
-     * @throws ClientExceptionInterface If an error happens while processing the request.
+     * @param ServerRequestInterface $request
+     * @return ServerRequestInterface
      */
-    public function sendRequest(RequestInterface $request): ResponseInterface
+    protected function addCookies(ServerRequestInterface $request): ServerRequestInterface
     {
-        // Find matching cookies from the cookie jar and add to request
         $cookies = $this->getCookieJar()->getMatches(
             $request->getUri()->getScheme(),
             $request->getUri()->getHost(),
@@ -108,12 +78,21 @@ class Client implements ClientInterface
             $request = $request->withHeader('Cookie', implode('; ', $cookies));
         }
 
-        // Send request/response through middleware stack
-        $response = (new MiddlewareHandler($this->client, $this->middleware))
-            ->handle($this->getMessageFactory()->toServerRequest($request));
+        return $request;
+    }
 
-        // Pull cookies from response and add to cookie jar
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return void
+     */
+    protected function saveCookies(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): void {
         $cookies = $response->getHeader('Set-Cookie');
+
         foreach ($cookies as $c) {
             $cookie = Cookie::fromString($c);
             if ($cookie->getDomain() === null) {
@@ -127,8 +106,6 @@ class Client implements ClientInterface
             }
             $this->getCookieJar()->setCookie($cookie);
         }
-
-        return $response;
     }
 
 
