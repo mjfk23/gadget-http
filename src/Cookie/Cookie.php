@@ -88,7 +88,10 @@ class Cookie
             ],
             array_map(
                 fn(string $part) => explode('=', $part, 2),
-                array_filter(array_map(trim(...), explode(';', $cookie)))
+                array_filter(
+                    array_map(trim(...), explode(';', $cookie)),
+                    fn(string $v) => $v !== ''
+                )
             )
         );
 
@@ -415,7 +418,7 @@ class Cookie
     public function matchesPath(string $path): bool
     {
         $cookiePath = $this->getPath();
-        return $cookiePath === '/' || $cookiePath == $path || (
+        return $cookiePath === '/' || $cookiePath === $path || (
             strpos($path, $cookiePath) === 0 && (
                 substr($cookiePath, -1, 1) === '/' ||
                 substr($path, strlen($cookiePath), 1) === '/'

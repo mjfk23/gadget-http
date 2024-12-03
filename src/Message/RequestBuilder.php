@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Gadget\Http\Message;
 
 use Gadget\Http\Cookie\CookieJar;
+use Gadget\Http\Exception\RequestException;
 use Gadget\Io\JSON;
-use Gadget\Lang\Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
@@ -242,11 +242,11 @@ class RequestBuilder
             $body = match ($contentType) {
                 self::FORM => is_array($body)
                     ? self::createQuery($body)
-                    : throw new Exception(["Body is not an array: %s", $contentType]),
+                    : throw new RequestException(["Body is not an array: %s", [$contentType]]),
                 self::JSON => JSON::encode($body),
                 default => is_scalar($body) || (is_object($body) && $body instanceof \Stringable) || $body === null
                     ? strval($body ?? '')
-                    : throw new Exception(["Unable to serialize body: %s", $contentType]),
+                    : throw new RequestException(["Unable to serialize body: %s", [$contentType]]),
             };
         }
 

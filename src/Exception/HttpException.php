@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Exception;
 
-class ResponseException extends HttpException
+use Gadget\Exception\Exception;
+
+class HttpException extends Exception
 {
 }

@@ -25,7 +25,7 @@ abstract class MessageHandler
                 $requestBuilder = $this->createRequestBuilder($client);
                 $request = $this->createRequest($requestBuilder);
             } catch (\Throwable $t) {
-                throw new RequestException("Error building request", 0, $t);
+                throw new RequestException("Error building request", $t);
             }
 
             try {
@@ -33,9 +33,11 @@ abstract class MessageHandler
             } catch (\Throwable $t) {
                 throw new ClientException([
                     "Error sending request: %s %s",
-                    $request->getMethod(),
-                    $request->getUri()
-                ], 0, $t);
+                    [
+                        $request->getMethod(),
+                        $request->getUri()
+                    ]
+                ], $t);
             }
 
             try {
@@ -43,10 +45,12 @@ abstract class MessageHandler
             } catch (\Throwable $t) {
                 throw new ResponseException([
                     "Error handling response: %s %s => %s",
-                    $request->getMethod(),
-                    $request->getUri(),
-                    $response->getStatusCode()
-                ], 0, $t);
+                    [
+                        $request->getMethod(),
+                        $request->getUri(),
+                        $response->getStatusCode()
+                    ]
+                ], $t);
             }
         } catch (\Throwable $t) {
             return $this->handleError($t);

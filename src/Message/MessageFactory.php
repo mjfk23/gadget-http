@@ -62,10 +62,10 @@ class MessageFactory implements
             ->withRequestTarget($request->getRequestTarget())
             ->withBody($request->getBody());
 
-        /** @var array<string,string|string[]> $headers */
+        /** @var array<int|string,string[]> $headers */
         $headers = $request->getHeaders();
         foreach ($headers as $name => $value) {
-            $serverRequest = $serverRequest->withHeader($name, $value);
+            $serverRequest = $serverRequest->withHeader(strval($name), $value);
         }
 
         return $serverRequest;

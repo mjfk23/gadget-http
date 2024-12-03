@@ -94,7 +94,7 @@ class CookieJar implements \IteratorAggregate
 
 
     /**
-     * @return \Traversable<string,Cookie>|Cookie[]
+     * @return \Traversable<string,Cookie>
      */
     public function getIterator(): \Traversable
     {
