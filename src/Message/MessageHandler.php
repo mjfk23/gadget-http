@@ -62,8 +62,6 @@ abstract class MessageHandler
             }
         } catch (\Throwable $t) {
             return $this->handleError($t);
-        } finally {
-            $this->client = null;
         }
     }
 
