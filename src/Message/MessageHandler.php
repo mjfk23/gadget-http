@@ -8,6 +8,8 @@ use Gadget\Http\Client\Client;
 use Gadget\Http\Exception\ClientException;
 use Gadget\Http\Exception\RequestException;
 use Gadget\Http\Exception\ResponseException;
+use Gadget\Io\Cast;
+use Gadget\Io\JSON;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -101,6 +103,13 @@ abstract class MessageHandler
         ResponseInterface $response,
         ServerRequestInterface $request
     ): mixed;
+
+
+    /** @return mixed[] */
+    protected function jsonToArray(ResponseInterface $response): array
+    {
+        return Cast::toArray(JSON::decode($response->getBody()->getContents()));
+    }
 
 
     /**
