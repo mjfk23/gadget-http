@@ -6,6 +6,7 @@ namespace Gadget\Http\Message;
 
 use Gadget\Http\Client\Client;
 use Gadget\Http\Exception\ClientException;
+use Gadget\Http\Exception\HttpException;
 use Gadget\Http\Exception\RequestException;
 use Gadget\Http\Exception\ResponseException;
 use Gadget\Io\Cast;
@@ -16,6 +17,9 @@ use Psr\Http\Message\ServerRequestInterface;
 /** @template TResponse */
 abstract class MessageHandler
 {
+    private Client|null $client = null;
+
+
     /**
      * @param Client $client
      * @return TResponse
@@ -23,6 +27,8 @@ abstract class MessageHandler
     public function invoke(Client $client): mixed
     {
         try {
+            $this->client = $client;
+
             try {
                 $requestBuilder = $this->createRequestBuilder($client);
                 $request = $this->createRequest($requestBuilder);
@@ -56,7 +62,18 @@ abstract class MessageHandler
             }
         } catch (\Throwable $t) {
             return $this->handleError($t);
+        } finally {
+            $this->client = null;
         }
+    }
+
+
+    /**
+     * @return Client
+     */
+    protected function getClient(): Client
+    {
+        return $this->client ?? throw new HttpException('Client not set');
     }
 
 
