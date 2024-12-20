@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Gadget\Http\Cookie;
 
 /** @implements \IteratorAggregate<string,Cookie> */
-class CookieJar implements \IteratorAggregate
+class CookieJar implements CookieJarInterface, \IteratorAggregate
 {
     /** @var array<string,Cookie> $cookies */
     private $cookies = [];
@@ -20,6 +20,19 @@ class CookieJar implements \IteratorAggregate
         private int|null $defaultMaxAge = 600
     ) {
         $this->setCookies($cookies);
+    }
+
+
+    public function getDefaultMagAge(): int|null
+    {
+        return $this->defaultMaxAge;
+    }
+
+
+    public function setDefaultMagAge(int|null $defaultMaxAge): static
+    {
+        $this->defaultMaxAge = $defaultMaxAge;
+        return $this;
     }
 
 

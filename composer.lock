@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8794b05ab8f517a7287457da2458953",
+    "content-hash": "c646c583fc11497e04e76243e98235bc",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -452,31 +452,29 @@
         },
         {
             "name": "mjfk23/gadget-cache",
-            "version": "v2.0.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjfk23/gadget-cache.git",
-                "reference": "ae01ce9314b62b8284f013942798420734400b7c"
+                "reference": "325c8f5f3a5c6a180fe7cc9c2c14faed59c58227"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjfk23/gadget-cache/zipball/ae01ce9314b62b8284f013942798420734400b7c",
-                "reference": "ae01ce9314b62b8284f013942798420734400b7c",
+                "url": "https://api.github.com/repos/mjfk23/gadget-cache/zipball/325c8f5f3a5c6a180fe7cc9c2c14faed59c58227",
+                "reference": "325c8f5f3a5c6a180fe7cc9c2c14faed59c58227",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "mjfk23/gadget-core": "^2.0",
+                "mjfk23/gadget-core": "^3.0.0-alpha",
                 "mjfk23/symfony-bundle": "^1.0",
                 "php": "^8.1",
                 "psr/cache": "^3.0"
             },
             "require-dev": {
-                "phpstan/extension-installer": "^1.4",
-                "phpstan/phpstan": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "squizlabs/php_codesniffer": "^3.10"
+                "mjfk23/gadget-code-style": "^1.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -503,20 +501,20 @@
                 "source": "https://github.com/mjfk23/gadget-cache",
                 "wiki": "https://github.com/mjfk23/gadget-cache/wiki"
             },
-            "time": "2024-12-03T15:06:26+00:00"
+            "time": "2024-12-20T16:47:00+00:00"
         },
         {
             "name": "mjfk23/gadget-core",
-            "version": "v2.0.0",
+            "version": "v3.0.0-alpha.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjfk23/gadget-core.git",
-                "reference": "d5ed5f576fde8907dd780bfa150d4752e077bebf"
+                "reference": "62a8505e63304c68ac5c5f43d2364998c052d63c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/d5ed5f576fde8907dd780bfa150d4752e077bebf",
-                "reference": "d5ed5f576fde8907dd780bfa150d4752e077bebf",
+                "url": "https://api.github.com/repos/mjfk23/gadget-core/zipball/62a8505e63304c68ac5c5f43d2364998c052d63c",
+                "reference": "62a8505e63304c68ac5c5f43d2364998c052d63c",
                 "shasum": ""
             },
             "require": {
@@ -524,10 +522,7 @@
                 "php": "^8.1"
             },
             "require-dev": {
-                "phpstan/extension-installer": "^1.4",
-                "phpstan/phpstan": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "squizlabs/php_codesniffer": "^3.10"
+                "mjfk23/gadget-code-style": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -556,20 +551,20 @@
                 "source": "https://github.com/mjfk23/gadget-core",
                 "wiki": "https://github.com/mjfk23/gadget-core/wiki"
             },
-            "time": "2024-12-03T12:55:38+00:00"
+            "time": "2024-12-20T16:11:55+00:00"
         },
         {
             "name": "mjfk23/psr-http-contracts",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjfk23/psr-http-contracts.git",
-                "reference": "f9ac27e558e66c6209c01a6d0e3f8a4201e98087"
+                "reference": "2e558d797b726185a5a6c64e91d754b122a011c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjfk23/psr-http-contracts/zipball/f9ac27e558e66c6209c01a6d0e3f8a4201e98087",
-                "reference": "f9ac27e558e66c6209c01a6d0e3f8a4201e98087",
+                "url": "https://api.github.com/repos/mjfk23/psr-http-contracts/zipball/2e558d797b726185a5a6c64e91d754b122a011c4",
+                "reference": "2e558d797b726185a5a6c64e91d754b122a011c4",
                 "shasum": ""
             },
             "require": {
@@ -582,10 +577,7 @@
                 "psr/http-server-middleware": "^1.0"
             },
             "require-dev": {
-                "phpstan/extension-installer": "^1.4",
-                "phpstan/phpstan": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "squizlabs/php_codesniffer": "^3.10"
+                "mjfk23/gadget-code-style": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -618,20 +610,20 @@
                 "source": "https://github.com/mjfk23/psr-http-contracts",
                 "wiki": "https://github.com/mjfk23/psr-http-contracts/wiki"
             },
-            "time": "2024-12-03T16:06:14+00:00"
+            "time": "2024-12-20T13:20:57+00:00"
         },
         {
             "name": "mjfk23/symfony-bundle",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjfk23/symfony-bundle.git",
-                "reference": "d4739433501a4d56c11fb9ab24916ba2ecc7a8a6"
+                "reference": "163ba615ffd378a45dd633368c516502bc47854c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjfk23/symfony-bundle/zipball/d4739433501a4d56c11fb9ab24916ba2ecc7a8a6",
-                "reference": "d4739433501a4d56c11fb9ab24916ba2ecc7a8a6",
+                "url": "https://api.github.com/repos/mjfk23/symfony-bundle/zipball/163ba615ffd378a45dd633368c516502bc47854c",
+                "reference": "163ba615ffd378a45dd633368c516502bc47854c",
                 "shasum": ""
             },
             "require": {
@@ -668,7 +660,7 @@
                 "source": "https://github.com/mjfk23/symfony-bundle",
                 "wiki": "https://github.com/mjfk23/symfony-bundle/wiki"
             },
-            "time": "2024-12-03T13:07:26+00:00"
+            "time": "2024-12-19T15:42:59+00:00"
         },
         {
             "name": "php-http/discovery",
@@ -1493,16 +1485,16 @@
         },
         {
             "name": "symfony/error-handler",
-            "version": "v7.2.0",
+            "version": "v7.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/error-handler.git",
-                "reference": "672b3dd1ef8b87119b446d67c58c106c43f965fe"
+                "reference": "6150b89186573046167796fa5f3f76601d5145f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/error-handler/zipball/672b3dd1ef8b87119b446d67c58c106c43f965fe",
-                "reference": "672b3dd1ef8b87119b446d67c58c106c43f965fe",
+                "url": "https://api.github.com/repos/symfony/error-handler/zipball/6150b89186573046167796fa5f3f76601d5145f8",
+                "reference": "6150b89186573046167796fa5f3f76601d5145f8",
                 "shasum": ""
             },
             "require": {
@@ -1548,7 +1540,7 @@
             "description": "Provides tools to manage errors and ease debugging PHP code",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/error-handler/tree/v7.2.0"
+                "source": "https://github.com/symfony/error-handler/tree/v7.2.1"
             },
             "funding": [
                 {
@@ -1564,7 +1556,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-11-05T15:35:02+00:00"
+            "time": "2024-12-07T08:50:44+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -2006,8 +1998,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -2085,8 +2077,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -2159,8 +2151,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -2532,6 +2524,51 @@
     ],
     "packages-dev": [
         {
+            "name": "mjfk23/gadget-code-style",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mjfk23/gadget-code-style.git",
+                "reference": "11f49aad8444bee8ffcbee6b403da94416cf932d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mjfk23/gadget-code-style/zipball/11f49aad8444bee8ffcbee6b403da94416cf932d",
+                "reference": "11f49aad8444bee8ffcbee6b403da94416cf932d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "squizlabs/php_codesniffer": "^3.10"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gadget\\CodeStyle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Melody Kimball",
+                    "role": "lead"
+                }
+            ],
+            "homepage": "https://github.com/mjfk23/gadget-code-style",
+            "support": {
+                "issues": "https://github.com/mjfk23/gadget-code-style/issues",
+                "source": "https://github.com/mjfk23/gadget-code-style",
+                "wiki": "https://github.com/mjfk23/gadget-code-style/wiki"
+            },
+            "time": "2024-12-18T20:17:58+00:00"
+        },
+        {
             "name": "phpstan/extension-installer",
             "version": "1.4.3",
             "source": {
@@ -2581,16 +2618,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "46b4d3529b12178112d9008337beda0cc2a1a6b4"
+                "reference": "50d276fc3bf1430ec315f2f109bbde2769821524"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/46b4d3529b12178112d9008337beda0cc2a1a6b4",
-                "reference": "46b4d3529b12178112d9008337beda0cc2a1a6b4",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/50d276fc3bf1430ec315f2f109bbde2769821524",
+                "reference": "50d276fc3bf1430ec315f2f109bbde2769821524",
                 "shasum": ""
             },
             "require": {
@@ -2635,25 +2672,25 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-11-28T22:19:37+00:00"
+            "time": "2024-12-17T17:14:01+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "a4a6a08bd4a461e516b9c3b8fdbf0f1883b34158"
+                "reference": "ed6fea0ad4ad9c7e25f3ad2e7c4d420cf1e67fe3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/a4a6a08bd4a461e516b9c3b8fdbf0f1883b34158",
-                "reference": "a4a6a08bd4a461e516b9c3b8fdbf0f1883b34158",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/ed6fea0ad4ad9c7e25f3ad2e7c4d420cf1e67fe3",
+                "reference": "ed6fea0ad4ad9c7e25f3ad2e7c4d420cf1e67fe3",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
-                "phpstan/phpstan": "^2.0"
+                "phpstan/phpstan": "^2.0.4"
             },
             "require-dev": {
                 "php-parallel-lint/php-parallel-lint": "^1.2",
@@ -2681,22 +2718,22 @@
             "description": "Extra strict and opinionated rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.0"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.1"
             },
-            "time": "2024-10-26T16:04:33+00:00"
+            "time": "2024-12-12T20:21:10+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.11.1",
+            "version": "3.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "19473c30efe4f7b3cd42522d0b2e6e7f243c6f87"
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/19473c30efe4f7b3cd42522d0b2e6e7f243c6f87",
-                "reference": "19473c30efe4f7b3cd42522d0b2e6e7f243c6f87",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
                 "shasum": ""
             },
             "require": {
@@ -2763,12 +2800,15 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-11-16T12:02:36+00:00"
+            "time": "2024-12-11T16:04:26+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "mjfk23/gadget-cache": 20,
+        "mjfk23/gadget-core": 15
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

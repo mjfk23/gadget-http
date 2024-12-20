@@ -14,7 +14,7 @@ class MiddlewareHandler implements RequestHandlerInterface
 {
     /**
      * @param ClientInterface $client
-     * @param MiddlewareInterface[] $middleware
+     * @param list<MiddlewareInterface> $middleware
      */
     public function __construct(
         private ClientInterface $client,
@@ -32,12 +32,15 @@ class MiddlewareHandler implements RequestHandlerInterface
         $middleware = array_pop($this->middleware);
 
         try {
-            return $middleware?->process($request, $this)
-                ?? $this->client->sendRequest($request);
+            $response = $middleware !== null
+                ? $middleware->process($request, $this)
+                : $this->client->sendRequest($request);
         } finally {
             if ($middleware !== null) {
                 array_push($this->middleware, $middleware);
             }
         }
+
+        return $response;
     }
 }

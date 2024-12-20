@@ -4,105 +4,111 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Message;
 
-use Gadget\Http\Client\Client;
+use Gadget\Http\Client\ClientInterface;
 use Gadget\Http\Exception\ClientException;
-use Gadget\Http\Exception\HttpException;
 use Gadget\Http\Exception\RequestException;
 use Gadget\Http\Exception\ResponseException;
-use Gadget\Io\Cast;
-use Gadget\Io\JSON;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @template TResponse */
-abstract class MessageHandler
+/**
+ * @template TRequest
+ * @template TResponse
+ * @implements MessageHandlerInterface<TRequest,TResponse>
+ */
+abstract class MessageHandler implements MessageHandlerInterface
 {
-    private Client|null $client = null;
+    /**
+     * @var MessageHandlerContext<TRequest> $context
+     */
+    private MessageHandlerContext $context;
 
 
     /**
-     * @param Client $client
+     * @param ClientInterface $client
+     * @param TRequest|null $requestBody
      * @return TResponse
      */
-    public function invoke(Client $client): mixed
-    {
+    final public function invoke(
+        ClientInterface $client,
+        mixed $requestBody = null
+    ): mixed {
         try {
-            $this->client = $client;
-
             try {
-                $requestBuilder = $this->createRequestBuilder($client);
-                $request = $this->createRequest($requestBuilder);
+                $this->context = $this->createContext($client, $requestBody);
             } catch (\Throwable $t) {
-                throw new RequestException("Error building request", $t);
+                throw new \RuntimeException("createContext()", 0, $t);
             }
 
             try {
-                $response = $this->sendRequest($client, $request);
+                $request = $this->createRequest($this->context->getClient()->createRequestBuilder());
+                $this->context->setRequest($request);
             } catch (\Throwable $t) {
-                throw new ClientException([
-                    "Error sending request: %s %s",
-                    [
-                        $request->getMethod(),
-                        $request->getUri()
-                    ]
-                ], $t);
+                throw new RequestException($t);
             }
 
             try {
-                return $this->handleResponse($response, $request);
+                $response = $this->sendRequest(
+                    $this->context->getClient(),
+                    $this->context->getRequest()
+                );
+                $this->context->setResponse($response);
             } catch (\Throwable $t) {
-                throw new ResponseException([
-                    "Error handling response: %s %s => %s",
-                    [
-                        $request->getMethod(),
-                        $request->getUri(),
-                        $response->getStatusCode()
-                    ]
-                ], $t);
+                throw new ClientException($request, $t);
+            }
+
+            try {
+                $responseBody = $this->handleResponse($this->getContext()->getResponse());
+            } catch (\Throwable $t) {
+                throw new ResponseException($request, $response, $t);
             }
         } catch (\Throwable $t) {
-            return $this->handleError($t);
+            $responseBody = $this->handleError($t);
         }
+
+        return $responseBody;
     }
 
 
     /**
-     * @return Client
+     * @return MessageHandlerContext<TRequest>
      */
-    protected function getClient(): Client
+    protected function getContext(): MessageHandlerContext
     {
-        return $this->client ?? throw new HttpException('Client not set');
+        return $this->context;
     }
 
 
     /**
-     * @param Client $client
-     * @return RequestBuilder
+     * @param ClientInterface $client
+     * @param TRequest|null $requestBody
+     * @return MessageHandlerContext<TRequest>
      */
-    protected function createRequestBuilder(Client $client): RequestBuilder
-    {
-        return new RequestBuilder(
-            $client->getMessageFactory(),
-            $client->getCookieJar()
+    protected function createContext(
+        ClientInterface $client,
+        mixed $requestBody
+    ): MessageHandlerContext {
+        return new MessageHandlerContext(
+            $client,
+            $requestBody
         );
     }
 
 
     /**
-     * @param RequestBuilder $requestBuilder
+     * @param RequestBuilderInterface $requestBuilder
      * @return ServerRequestInterface
      */
-    abstract protected function createRequest(RequestBuilder $requestBuilder): ServerRequestInterface;
-
+    abstract protected function createRequest(RequestBuilderInterface $requestBuilder): ServerRequestInterface;
 
 
     /**
-     * @param Client $client
+     * @param ClientInterface $client
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
     protected function sendRequest(
-        Client $client,
+        ClientInterface $client,
         ServerRequestInterface $request
     ): ResponseInterface {
         return $client->sendRequest($request);
@@ -111,24 +117,12 @@ abstract class MessageHandler
 
     /**
      * @param ResponseInterface $response
-     * @param ServerRequestInterface $request
      * @return TResponse
      */
-    abstract protected function handleResponse(
-        ResponseInterface $response,
-        ServerRequestInterface $request
-    ): mixed;
-
-
-    /** @return mixed[] */
-    protected function jsonToArray(ResponseInterface $response): array
-    {
-        return Cast::toArray(JSON::decode($response->getBody()->getContents()));
-    }
+    abstract protected function handleResponse(ResponseInterface $response): mixed;
 
 
     /**
-     * @param \Throwable $t
      * @return TResponse
      */
     protected function handleError(\Throwable $t): mixed

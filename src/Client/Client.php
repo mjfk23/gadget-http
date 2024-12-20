@@ -4,42 +4,126 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Client;
 
-use Gadget\Cache\CacheItemPool;
+use Fig\Http\Message\MessageFactoryInterface;
+use Gadget\Cache\CacheInterface;
 use Gadget\Http\Cookie\Cookie;
-use Gadget\Http\Cookie\CookieJar;
-use Gadget\Http\Message\MessageFactory;
-use Psr\Http\Client\ClientInterface;
+use Gadget\Http\Cookie\CookieJarInterface;
+use Gadget\Http\Message\MessageHandlerInterface;
+use Gadget\Http\Message\RequestBuilderInterface;
+use Psr\Http\Client\ClientInterface as PsrClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
 
 class Client implements ClientInterface
 {
-    private CookieJar|null $cookieJar = null;
-
-
     /**
-     * @param ClientInterface $client
-     * @param MessageFactory $messageFactory
-     * @param CacheItemPool $cache
-     * @param MiddlewareInterface[] $middleware
+     * @param PsrClientInterface $client
+     * @param MessageFactoryInterface $messageFactory
+     * @param MiddlewareContainerInterface $middlewareContainer
+     * @param RequestBuilderInterface $requestBuilder
+     * @param CacheInterface $cache
+     * @param CookieJarInterface $cookieJar
      */
     public function __construct(
-        private ClientInterface $client,
-        private MessageFactory $messageFactory,
-        private CacheItemPool $cache,
-        private array $middleware = []
+        private PsrClientInterface $client,
+        private MessageFactoryInterface $messageFactory,
+        private MiddlewareContainerInterface $middlewareContainer,
+        private RequestBuilderInterface $requestBuilder,
+        private CacheInterface $cache,
+        private CookieJarInterface $cookieJar
     ) {
-        $this->cache = $cache->withNamespace(self::class);
+        $this->cache = $cache->withNamespace(static::class);
+
+        $cachedCookies = $this->cache
+            ->getCacheItem(CookieJarInterface::class)
+            ->getCacheValue(fn(mixed $v) => is_array($v) ? $v : null) ?? [];
+
+        foreach ($cachedCookies as $cookie) {
+            if ($cookie instanceof Cookie && !$cookie->isExpired()) {
+                $this->cookieJar->setCookie($cookie);
+            }
+        }
     }
 
 
     public function __destruct()
     {
-        if ($this->cookieJar !== null) {
-            $this->cache->set('cookieJar', $this->cookieJar->clearExpired());
-        }
+        $this->cache
+            ->getCacheItem(CookieJarInterface::class)
+            ->set($this->cookieJar->clearExpired()->getCookies())
+            ->saveCacheItem();
+    }
+
+
+    /**
+     * @return PsrClientInterface
+     */
+    public function getClient(): PsrClientInterface
+    {
+        return $this->client;
+    }
+
+
+    /**
+     * @return MessageFactoryInterface
+     */
+    public function getMessageFactory(): MessageFactoryInterface
+    {
+        return $this->messageFactory;
+    }
+
+
+    /**
+     * @return MiddlewareContainerInterface
+     */
+    public function getMiddlewareContainer(): MiddlewareContainerInterface
+    {
+        return $this->middlewareContainer;
+    }
+
+
+    /**
+     * @return RequestBuilderInterface
+     */
+    public function createRequestBuilder(): RequestBuilderInterface
+    {
+        return $this->requestBuilder->clone();
+    }
+
+
+    /**
+     * @return CacheInterface
+     */
+    public function getCache(): CacheInterface
+    {
+        return $this->cache;
+    }
+
+
+    /**
+     * @return CookieJarInterface
+     */
+    public function getCookieJar(): CookieJarInterface
+    {
+        return $this->cookieJar;
+    }
+
+
+    /**
+     * @template TRequest
+     * @template TResponse
+     * @param MessageHandlerInterface<TRequest,TResponse> $handler
+     * @param TRequest|null $requestBody
+     * @return TResponse
+     */
+    public function handleMessage(
+        MessageHandlerInterface $handler,
+        mixed $requestBody
+    ): mixed {
+        return $handler->invoke(
+            $this,
+            $requestBody
+        );
     }
 
 
@@ -51,48 +135,24 @@ class Client implements ClientInterface
     {
         $request = $this->getMessageFactory()->toServerRequest($request);
 
-        $request = $this->addCookies($request);
 
-        $response = (new MiddlewareHandler($this->client, $this->middleware))
-            ->handle($request);
-
-        $this->saveCookies($request, $response);
-
-        return $response;
-    }
-
-
-    /**
-     * @param ServerRequestInterface $request
-     * @return ServerRequestInterface
-     */
-    protected function addCookies(ServerRequestInterface $request): ServerRequestInterface
-    {
         $cookies = $this->getCookieJar()->getMatches(
             $request->getUri()->getScheme(),
             $request->getUri()->getHost(),
             $request->getUri()->getPath()
         );
-
         if (count($cookies) > 0) {
             $request = $request->withHeader('Cookie', implode('; ', $cookies));
         }
 
-        return $request;
-    }
+
+        $response = (new MiddlewareHandler(
+            $this->client,
+            $this->getMiddlewareContainer()->getMiddleware($request)
+        ))->handle($request);
 
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return void
-     */
-    protected function saveCookies(
-        ServerRequestInterface $request,
-        ResponseInterface $response
-    ): void {
         $cookies = $response->getHeader('Set-Cookie');
-
         foreach ($cookies as $c) {
             $cookie = Cookie::fromString($c);
             if ($cookie->getDomain() === null) {
@@ -106,61 +166,8 @@ class Client implements ClientInterface
             }
             $this->getCookieJar()->setCookie($cookie);
         }
-    }
 
 
-    /**
-     * @return MessageFactory
-     */
-    public function getMessageFactory(): MessageFactory
-    {
-        return $this->messageFactory;
-    }
-
-
-    /**
-     * @return CacheItemPool
-     */
-    public function getCache(): CacheItemPool
-    {
-        return $this->cache;
-    }
-
-
-    /**
-     * @return CookieJar
-     */
-    public function getCookieJar(): CookieJar
-    {
-        if ($this->cookieJar === null) {
-            $cookieJar = $this->cache->getObject('cookieJar', CookieJar::class);
-            if ($cookieJar === null) {
-                $cookieJar = new CookieJar();
-                $this->cache->set('cookieJar', $cookieJar);
-            }
-            $this->cookieJar = $cookieJar;
-        }
-
-        return $this->cookieJar;
-    }
-
-
-    /**
-     * @return MiddlewareInterface[]
-     */
-    public function getMiddleware(): array
-    {
-        return $this->middleware;
-    }
-
-
-    /**
-     * @param MiddlewareInterface[] $middleware
-     * @return static
-     */
-    public function setMiddleware(array $middleware): static
-    {
-        $this->middleware = $middleware;
-        return $this;
+        return $response;
     }
 }

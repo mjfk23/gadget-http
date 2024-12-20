@@ -1,7 +1,17 @@
 services:
-  _defaults:
-    autowire: true
-    autoconfigure: true
 
-  Gadget\Http\:
-    resource: "../../../src/"
+  gadget.http.client:
+    autowire: true
+    class: Gadget\Http\Client\Client
+
+  gadget.http.cookie_jar:
+    autowire: true
+    class: Gadget\Http\Cookie\CookieJar
+
+  gadget.http.middleware_container:
+    autowire: true
+    class: Gadget\Http\Client\MiddlewareContainer
+
+  gadget.http.request_builder:
+    autowire: true
+    class: Gadget\Http\Message\RequestBuilder

@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Message;
 
+use Fig\Http\Message\MessageFactoryInterface;
+use Gadget\Http\Client\Client;
 use Gadget\Http\Cookie\CookieJar;
-use Gadget\Http\Exception\RequestException;
+use Gadget\Http\Exception\HttpException;
 use Gadget\Io\JSON;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-class RequestBuilder
+class RequestBuilder implements RequestBuilderInterface
 {
     /** @var string */
     public const FORM = 'application/x-www-form-urlencoded';
@@ -42,47 +44,27 @@ class RequestBuilder
 
 
     /**
-     * @param MessageFactory $messageFactory
-     * @param CookieJar $cookieJar
+     * @param MessageFactoryInterface $messageFactory
      * @param string $method
      * @param string $uri
+     * @param ServerRequestInterface|null $request
      */
-    public function __construct(
-        private MessageFactory $messageFactory,
-        private CookieJar $cookieJar,
+    final public function __construct(
+        private MessageFactoryInterface $messageFactory,
         string $method = 'GET',
-        string $uri = ''
+        string $uri = '',
+        ServerRequestInterface|null $request = null
     ) {
-        $this->request = $this->getMessageFactory()->createServerRequest($method, $uri);
+        $this->request = $request ?? $this->getMessageFactory()->createServerRequest($method, $uri);
     }
 
 
     /**
-     * @return MessageFactory
+     * @return MessageFactoryInterface
      */
-    protected function getMessageFactory(): MessageFactory
+    protected function getMessageFactory(): MessageFactoryInterface
     {
         return $this->messageFactory;
-    }
-
-
-    /**
-     * @param MessageFactory $messageFactory
-     * @return static
-     */
-    protected function setMessageFactory(MessageFactory $messageFactory): static
-    {
-        $this->messageFactory = $messageFactory;
-        return $this;
-    }
-
-
-    /**
-     * @return ServerRequestInterface
-     */
-    public function getRequest(): ServerRequestInterface
-    {
-        return $this->request;
     }
 
 
@@ -94,6 +76,37 @@ class RequestBuilder
     {
         $this->request = $request;
         return $this;
+    }
+
+
+    /**
+     * @return static
+     */
+    public function clone(): static
+    {
+        return new static(
+            messageFactory: $this->getMessageFactory(),
+            request: $this->getRequest()
+        );
+    }
+
+
+    /**
+     * @return static
+     */
+    public function reset(): static
+    {
+        $this->request = $this->getMessageFactory()->createServerRequest('GET', '');
+        return $this;
+    }
+
+
+    /**
+     * @return ServerRequestInterface
+     */
+    public function getRequest(): ServerRequestInterface
+    {
+        return $this->request;
     }
 
 
@@ -242,11 +255,11 @@ class RequestBuilder
             $body = match ($contentType) {
                 self::FORM => is_array($body)
                     ? self::createQuery($body)
-                    : throw new RequestException(["Body is not an array: %s", [$contentType]]),
+                    : throw new HttpException(["Body is not an array: %s", $contentType]),
                 self::JSON => JSON::encode($body),
                 default => is_scalar($body) || (is_object($body) && $body instanceof \Stringable) || $body === null
                     ? strval($body ?? '')
-                    : throw new RequestException(["Unable to serialize body: %s", [$contentType]]),
+                    : throw new HttpException(["Unable to serialize body: %s", $contentType]),
             };
         }
 
@@ -294,14 +307,5 @@ class RequestBuilder
         string|array $value
     ): static {
         return $this->setRequest($this->getRequest()->withHeader($name, $value));
-    }
-
-
-    /**
-     * @return CookieJar
-     */
-    public function getCookieJar(): CookieJar
-    {
-        return $this->cookieJar;
     }
 }
