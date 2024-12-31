@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Message;
 
-use Fig\Http\Message\MessageFactoryInterface;
-use Gadget\Http\Client\Client;
-use Gadget\Http\Cookie\CookieJar;
+use Gadget\Http\Message\MessageFactoryInterface;
 use Gadget\Http\Exception\HttpException;
-use Gadget\Io\JSON;
+use Gadget\Lang\JSON;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-class RequestBuilder implements RequestBuilderInterface
+class RequestBuilder
 {
     /** @var string */
     public const FORM = 'application/x-www-form-urlencoded';
@@ -256,7 +254,7 @@ class RequestBuilder implements RequestBuilderInterface
                 self::FORM => is_array($body)
                     ? self::createQuery($body)
                     : throw new HttpException(["Body is not an array: %s", $contentType]),
-                self::JSON => JSON::encode($body),
+                self::JSON => (new JSON())->encode($body),
                 default => is_scalar($body) || (is_object($body) && $body instanceof \Stringable) || $body === null
                     ? strval($body ?? '')
                     : throw new HttpException(["Unable to serialize body: %s", $contentType]),

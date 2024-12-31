@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Cookie;
 
-use Gadget\Io\Cast;
+use Gadget\Lang\Cast;
 
-class Cookie
+class Cookie implements CookieInterface
 {
     /**
      * @param string $uriPath
@@ -324,16 +324,18 @@ class Cookie
      */
     public function setValues(array $values): static
     {
+        $cast = new Cast();
+
         $this->values = [];
         $this
-            ->setName(Cast::toValueOrNull($values['Name'] ?? null, Cast::toString(...)) ?? '')
-            ->setValue(Cast::toValueOrNull($values['Value'] ?? null, Cast::toString(...)))
-            ->setDomain(Cast::toValueOrNull($values['Domain'] ?? null, Cast::toString(...)))
-            ->setPath(Cast::toValueOrNull($values['Path'] ?? null, Cast::toString(...)) ?? '/')
-            ->setExpires(Cast::toValueOrNull($values['Expires'] ?? null, Cast::toString(...)))
-            ->setMaxAge(Cast::toValueOrNull($values['Max-Age'] ?? null, Cast::toInt(...)))
-            ->setSecure(Cast::toValueOrNull($values['Secure'] ?? null, Cast::toBool(...)) === true)
-            ->setHttpOnly(Cast::toValueOrNull($values['HttpOnly'] ?? null, Cast::toBool(...)) === true)
+            ->setName($cast->toStringOrNull($values['Name'] ?? null) ?? '')
+            ->setValue($cast->toStringOrNull($values['Value'] ?? null))
+            ->setDomain($cast->toStringOrNull($values['Domain'] ?? null))
+            ->setPath($cast->toStringOrNull($values['Path'] ?? null) ?? '/')
+            ->setExpires($cast->toStringOrNull($values['Expires'] ?? null))
+            ->setMaxAge($cast->toIntOrNull($values['Max-Age'] ?? null))
+            ->setSecure($cast->toBoolOrNull($values['Secure'] ?? null) === true)
+            ->setHttpOnly($cast->toBoolOrNull($values['HttpOnly'] ?? null) === true)
             ;
 
         /** @var string[] $keys */

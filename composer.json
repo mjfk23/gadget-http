@@ -1,9 +1,7 @@
 {
-  "name": "mjfk23/gadget-http",
-  "description": "Gadget library for working with HTTP",
+  "name": "gadgetphp/http",
   "type": "library",
-  "keywords": [],
-  "homepage": "https://github.com/mjfk23/gadget-http",
+  "homepage": "https://github.com/gadgetphp/http",
   "license": "MIT",
   "authors": [
     {
@@ -12,36 +10,26 @@
     }
   ],
   "support": {
-    "issues": "https://github.com/mjfk23/gadget-http/issues",
-    "wiki": "https://github.com/mjfk23/gadget-http/wiki",
-    "source": "https://github.com/mjfk23/gadget-http"
+    "issues": "https://github.com/gadgetphp/http/issues",
+    "wiki": "https://github.com/gadgetphp/http/wiki",
+    "source": "https://github.com/gadgetphp/http"
   },
   "require": {
     "php": "^8.1",
-    "firebase/php-jwt": "^6.10",
-    "guzzlehttp/guzzle": "^7.9",
-    "guzzlehttp/psr7": "^2.7",
-    "mjfk23/gadget-cache": "dev-main",
-    "mjfk23/gadget-core": "^3.0.0-alpha",
-    "mjfk23/psr-http-contracts": "^1.0",
-    "mjfk23/symfony-bundle": "^1.0",
-    "php-http/discovery": "^1.19"
+    "gadgetphp/contracts": "dev-http",
+    "gadgetphp/lang": "dev-main"
   },
   "require-dev": {
-    "mjfk23/gadget-code-style": "^1.0"
+    "gadgetphp/code-style": "^1.0"
   },
   "autoload": {
     "psr-4": {
-      "Gadget\\Http\\": [
-        "src/",
-        "bundle/"
-      ]
+      "Gadget\\Http\\": "src/"
     }
   },
   "config": {
     "allow-plugins": {
-      "phpstan/extension-installer": true,
-      "php-http/discovery": true
+      "phpstan/extension-installer": true
     },
     "sort-packages": true,
     "optimize-autoloader": true,

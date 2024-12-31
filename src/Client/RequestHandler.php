@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class MiddlewareHandler implements RequestHandlerInterface
+class RequestHandler implements RequestHandlerInterface
 {
     /**
      * @param ClientInterface $client
@@ -18,7 +18,7 @@ class MiddlewareHandler implements RequestHandlerInterface
      */
     public function __construct(
         private ClientInterface $client,
-        private array $middleware = []
+        private array $middleware
     ) {
     }
 
@@ -29,7 +29,7 @@ class MiddlewareHandler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $middleware = array_pop($this->middleware);
+        $middleware = array_shift($this->middleware);
 
         try {
             $response = $middleware !== null
@@ -37,7 +37,7 @@ class MiddlewareHandler implements RequestHandlerInterface
                 : $this->client->sendRequest($request);
         } finally {
             if ($middleware !== null) {
-                array_push($this->middleware, $middleware);
+                array_unshift($this->middleware, $middleware);
             }
         }
 

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Gadget\Http\Cookie;
 
-/** @implements \IteratorAggregate<string,Cookie> */
+/** @implements \IteratorAggregate<string,CookieInterface> */
 class CookieJar implements CookieJarInterface, \IteratorAggregate
 {
-    /** @var array<string,Cookie> $cookies */
+    /** @var array<string,CookieInterface> $cookies */
     private $cookies = [];
 
 
     /**
-     * @param (string|array<string,string|int|bool|null>|Cookie)[] $cookies
+     * @param (string|array<string,string|int|bool|null>|CookieInterface)[] $cookies
      * @param int|null $defaultMaxAge
      */
     public function __construct(
@@ -23,12 +23,19 @@ class CookieJar implements CookieJarInterface, \IteratorAggregate
     }
 
 
+    /**
+     * @return int
+     */
     public function getDefaultMagAge(): int|null
     {
         return $this->defaultMaxAge;
     }
 
 
+    /**
+     * @param int|null $defaultMaxAge
+     * @return static
+     */
     public function setDefaultMagAge(int|null $defaultMaxAge): static
     {
         $this->defaultMaxAge = $defaultMaxAge;
@@ -37,7 +44,7 @@ class CookieJar implements CookieJarInterface, \IteratorAggregate
 
 
     /**
-     * @return Cookie[]
+     * @return CookieInterface[]
      */
     public function getCookies(): array
     {
@@ -46,7 +53,7 @@ class CookieJar implements CookieJarInterface, \IteratorAggregate
 
 
     /**
-     * @param (string|array<string,string|int|bool|null>|Cookie)[] $cookies
+     * @param (string|array<string,string|int|bool|null>|CookieInterface)[] $cookies
      * @return static
      */
     public function setCookies(array $cookies): static
@@ -62,19 +69,19 @@ class CookieJar implements CookieJarInterface, \IteratorAggregate
      * @param string $domain
      * @param string $path
      * @param string $name
-     * @return Cookie
+     * @return CookieInterface
      */
-    public function getCookie(string $domain, string $path, string $name): Cookie|null
+    public function getCookie(string $domain, string $path, string $name): CookieInterface|null
     {
         return $this->cookies[Cookie::getCookieKey($domain, $path, $name)] ?? null;
     }
 
 
     /**
-     * @param string|array<string,string|int|bool|null>|Cookie $cookie
+     * @param string|array<string,string|int|bool|null>|CookieInterface $cookie
      * @return bool
      */
-    public function setCookie(string|array|Cookie $cookie): bool
+    public function setCookie(string|array|CookieInterface $cookie): bool
     {
         $cookie = match (true) {
             is_string($cookie) => Cookie::fromString($cookie),
@@ -107,7 +114,7 @@ class CookieJar implements CookieJarInterface, \IteratorAggregate
 
 
     /**
-     * @return \Traversable<string,Cookie>
+     * @return \Traversable<string,CookieInterface>
      */
     public function getIterator(): \Traversable
     {
@@ -119,7 +126,7 @@ class CookieJar implements CookieJarInterface, \IteratorAggregate
      * @param string $scheme
      * @param string $host
      * @param string $path
-     * @return Cookie[]
+     * @return CookieInterface[]
      */
     public function getMatches(
         string $scheme,
@@ -128,7 +135,7 @@ class CookieJar implements CookieJarInterface, \IteratorAggregate
     ): array {
         return array_filter(
             $this->getCookies(),
-            fn(Cookie $cookie): bool => $cookie->matches($scheme, $host, $path)
+            fn(CookieInterface $cookie): bool => $cookie->matches($scheme, $host, $path)
         );
     }
 
@@ -140,7 +147,7 @@ class CookieJar implements CookieJarInterface, \IteratorAggregate
     {
         $this->cookies = array_filter(
             $this->cookies,
-            fn(Cookie $cookie): bool => $cookie->getExpires() !== null && !$cookie->isExpired()
+            fn(CookieInterface $cookie): bool => $cookie->getExpires() !== null && !$cookie->isExpired()
         );
         return $this;
     }
